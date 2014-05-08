@@ -1,0 +1,4 @@
+# Modify this values to meet your needs
+dbusername: 'databeamuser'
+dbpasswd: 'databeampasswd'
+dbname: 'restdb'

@@ -1,0 +1,37 @@
+- hosts: all
+  user: vagrant
+  sudo: yes
+
+  tasks:
+
+  - name: Update system (this may take a while...)
+    apt: update_cache=yes
+    
+  - name: Install dependencies
+    apt: name={{item}} state=latest update_cache=yes
+    with_items:
+        - wget
+        - curl
+        - git
+        - docker.io
+
+  - name: Create directory per project
+    file: state=directory path=/home/vagrant/dockerfiles/"{{item}}"
+    with_items:
+        - instant-api-py
+        - csv-to-api
+        - DataBeam
+        - OpenRefine
+        - petl
+        - pygrametl
+
+  - name: Copy Dockerfiles
+    copy: src=dockerfiles/{{item}}/Dockerfile dest=/home/vagrant/dockerfiles/{{item}}/ mode=0777
+    with_items:
+        - instant-api-py
+        - csv-to-api
+        - DataBeam
+        - OpenRefine
+        - petl
+        - pygrametl
+ 

@@ -1,0 +1,60 @@
+- hosts: all
+  user: vagrant
+  sudo: yes
+
+  vars_files:
+  - vars/dbsettings.yml
+
+  tasks:
+
+  - name: Update system (this may take a while...)
+    apt: update_cache=yes
+
+  - name: Install dependencies
+    apt: name={{item}} state=latest update_cache=yes
+    with_items:
+        - curl
+        - wget
+        - git
+        - vim
+        - nano
+        - php5
+        - php5-cli
+        - php5-dev
+        - php-pear
+        - php5-fpm
+        - php5-common
+        - php5-mcrypt
+        - php5-gd
+        - php-apc
+        - apache2
+        - libapache2-mod-php5
+        - mysql-server
+
+  - name: Enable apache mods
+    command: a2enmod php5 rewrite
+
+  - name: Clean up /var/www directory
+    command: rm -rf /var/www/html/
+ 
+  - name: Clone application
+    command: git clone https://github.com/philipashlock/DataBeam.git /var/www/DataBeam/
+
+  - name: Copy config files
+    copy: src=templates/upload.php  dest=/var/www/DataBeam/application/config/upload.php
+    copy: src=templates/database.php dest=/var/www/DataBeam/application/config/database.php
+
+  - name: Install python-mysqldb
+    command: apt-get install python-mysqldb -y
+
+  - name: Copy mysql dump
+    copy: src=files/restdb.sql dest=/tmp
+
+  - name: Create database
+    mysql_db: login_user={{ dbusername }} login_password={{ dbpasswd }}  name={{ dbname }} state=import target=/tmp/restdb.sql
+
+  - name: Create database user
+    mysql_user: name={{ dbusername }} password={{ dbpasswd }} priv={{ dbname }}.*:ALL,GRANT state=present
+
+  - name: Restart Apache
+    command: /etc/init.d/apache2 restart

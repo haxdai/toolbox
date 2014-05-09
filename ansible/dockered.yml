@@ -19,7 +19,7 @@
     file: state=directory path=/home/vagrant/dockerfiles/"{{item}}"
     with_items:
         - Kettle
-        - Openrefine
+        - OpenRefine
         - petl
         - pygrametl
         - csv-to-api

@@ -13,6 +13,10 @@ RUN apt-get install -y openjdk-7-jre
 RUN wget https://github.com/OpenRefine/OpenRefine/releases/download/2.5/google-refine-2.5-r2407.tar.gz
 RUN tar zxvf google-refine-2.5-r2407.tar.gz
 
-ENV DEBIAN_FRONTEND dialog
+RUN rm google-refine-2.5-r2407.tar.gz
+
+WORKDIR /google-refine-2.5
+
+CMD ["./refine"]
 
 EXPOSE 3333

@@ -11,7 +11,7 @@
     apt: update_cache=yes
 
   - name: Install dependencies
-    apt: name={{item}} state=latest update_cache=yes
+    apt: name={{ item }} state=latest update_cache=yes
     with_items:
         - curl
         - wget
@@ -35,7 +35,7 @@
     command: a2enmod php5 rewrite
 
   - name: Clean up /var/www directory
-    command: rm -rf /var/www/html/
+    shell: rm -rf /var/www/*
  
   - name: Clone application
     command: git clone https://github.com/philipashlock/DataBeam.git /var/www/DataBeam/
@@ -47,6 +47,17 @@
   - name: Install python-mysqldb
     command: apt-get install python-mysqldb -y
 
+  - name: Update mysql root password
+    mysql_user: name=root host={{ item }} password={{ mysql_root_password }}
+    with_items:
+        - 127.0.0.1
+        - ::1
+        - localhost
+
+
+  - name: Ensure there is no anonymous MySQL user
+    mysql_user: name="" state="absent"
+
   - name: Copy mysql dump
     copy: src=files/restdb.sql dest=/tmp
 
@@ -55,6 +66,9 @@
 
   - name: Create database user
     mysql_user: name={{ dbusername }} password={{ dbpasswd }} priv={{ dbname }}.*:ALL,GRANT state=present
+
+  - name: Modify .my.cnf file
+    copy: src=templates/my.cnf.j2 dest=~/.my.cnf owner=root mode=0600
 
   - name: Restart Apache
     command: /etc/init.d/apache2 restart

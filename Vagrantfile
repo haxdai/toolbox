@@ -62,6 +62,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Enable provisioning with Ansible
   config.vm.provision "ansible" do |ansible| 
-      ansible.playbook = "ansible/tools/DataBeam/DataBeam.yml"
+      ansible.playbook = "ansible/dockered.yml"
   end
 end

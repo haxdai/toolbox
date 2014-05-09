@@ -1,0 +1,29 @@
+- hosts: all
+  user: vagrant
+  sudo: yes
+
+  tasks:
+
+  - name: Update system (this may take a while...)
+    apt: update_cache=yes
+
+  - name: Install dependencies
+    apt: name={{ item }} state=latest update_cache=yes
+    with_items:
+        - curl
+        - wget
+        - vim
+        - nano
+        - unzip
+        - openjdk-6-jdk
+
+  - name: Download Pentaho Kettle
+    command: wget https://copy.com/Li8lMFwqJckn -O pdi-ce-5.0.1.A-stable.zip
+
+  - name: Extract file
+    command: unzip pdi-ce-5.0.1.A-stable.zip
+
+  - name: Run Carte (use "cluster" as user and password)
+    command: cd data-integration
+    command: ./carte.sh 127.0.0.1 8081
+

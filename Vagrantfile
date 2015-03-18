@@ -61,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
   # Enable provisioning with Ansible
-  config.vm.provision "ansible" do |ansible| 
-      ansible.playbook = "ansible/dockered.yml"
-  end
+  #config.vm.provision "ansible" do |ansible| 
+  #    ansible.playbook = "ansible/dockered.yml"
+  #end
 end

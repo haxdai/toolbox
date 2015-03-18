@@ -6,14 +6,25 @@
 
   - name: Update system (this may take a while...)
     apt: update_cache=yes
-    
+
   - name: Install dependencies
     apt: name={{item}} state=latest update_cache=yes
     with_items:
         - wget
         - curl
         - git
+        - python2.7
+        - python-setuptools
+        - python-pip
         - docker.io
+
+  - name: Clone ckanops repo
+    command: git clone https://github.com/haxdai/ckanops
+
+  - name: Change ckanops permissions
+    file: path=./ckanops mode=0777 owner=vagrant recurse=yes
+  - name: Install ckanops dependencies
+    command: chdir=./ckanops pip install -r requirements.txt
 
   - name: Create directory per project
     file: state=directory path=/home/vagrant/dockerfiles/"{{item}}"
@@ -25,6 +36,7 @@
         - csv-to-api
         - DataBeam
         - instant-api-py
+        - ckanops
 
   - name: Copy cleaning tools Dockerfiles
     copy: src=../limpieza/{{item}}/Dockerfile dest=/home/vagrant/dockerfiles/{{item}}/ mode=0777
@@ -40,3 +52,8 @@
         - csv-to-api
         - DataBeam
         - instant-api-py
+  
+  - name: Copy publishing tools Dockerfiles
+    copy: src=../publicacion/{{item}}/Dockerfile dest=/home/vagrant/dockerfiles/{{item}}/ mode=0777
+    with_items:
+        - ckanops
